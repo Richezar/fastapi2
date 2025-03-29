@@ -67,9 +67,9 @@ async def get_advertisement(ad_id: int, session: SessionDependency):
     return ad_orm_obj.dict
 
 @app.get("/user/{us_id}", tags=['User'], response_model=GetUserResponse)
-async def get_user(us_id: int, session: SessionDependency, token: TokenDependency):
+async def get_user(us_id: int, session: SessionDependency):
     us_orm_obj = await crud.get_item_by_id(session, models.User, us_id)
-    return us_orm_obj.dict()
+    return us_orm_obj.dict
 
 @app.get("/advertisement", tags=['Advertisement'], response_model=list[GetAdvertisementResponse])
 async def get_query_sting_advertisement(session: SessionDependency,
