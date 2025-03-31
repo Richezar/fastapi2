@@ -36,8 +36,10 @@ async def create_advertisement(ad: CreateAdvertisementRequest, session: SessionD
 
 
 @app.patch("/advertisement/{ad_id}", tags=['Advertisement'])
-async def update_advertisement(ad_id: int, ad_data: UpdateAdvertisementRequest, session: SessionDependency):
+async def update_advertisement(ad_id: int, ad_data: UpdateAdvertisementRequest, session: SessionDependency, token: TokenDependency):
     ad = await session.get(models.Advertisement, ad_id)
+    if ad.owner_id != token.user_id and token.user.role != "admin":
+        raise HTTPException(status_code=403, detail="Forbidden")
     if not ad:
         raise HTTPException(status_code=404, detail="Advertisement not found")
     for field, value in ad_data.dict(exclude_unset=True).items():
@@ -92,8 +94,11 @@ async def get_query_sting_advertisement(session: SessionDependency,
     return ads
 
 @app.delete("/advertisement/{ad_id}", tags=['Advertisement'], response_model=DeleteAdvertisementResponse)
-async def delete_advertisement(ad_id: int, session: SessionDependency):
-    await crud.delete_item(session, ad_id)
+async def delete_advertisement(ad_id: int, session: SessionDependency, token: TokenDependency):
+    ad = await session.get(models.Advertisement, ad_id)
+    if ad.owner_id != token.user_id and token.user.role != "admin":
+        raise HTTPException(status_code=403, detail="Forbidden")
+    await crud.delete_item(session, models.Advertisement, ad_id)
     return {"status": "success"}
 
 @app.delete("/user/{us_id}", tags=['User'], response_model=DeleteUserResponse)

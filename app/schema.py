@@ -17,7 +17,6 @@ class UpdateAdvertisementRequest(BaseModel):
     title: str | None = None
     description: str | None = None
     price: float | None = None
-    owner: str | None = None
 
 class DeleteAdvertisementResponse(BaseModel):
     status: str

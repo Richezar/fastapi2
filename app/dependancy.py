@@ -21,7 +21,8 @@ async def get_token(
         Token.token == x_token,
         Token.creation_time >= (datetime.datetime.now() - datetime.timedelta(seconds=TOKEN_TTL_SEC))
     )
-    token = await session.scalars(query)
+    scalar_result = await session.scalars(query)
+    token = scalar_result.first()
     if token is None:
         raise HTTPException(401, 'Token not found')
     return token
